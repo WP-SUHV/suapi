@@ -1,0 +1,30 @@
+{
+    "name": "wp-suhv/suapi",
+    "description": "Library to connect with the swiss unihockey API v2.",
+    "version": "0.1.0",
+    "keywords": [],
+    "homepage": "https://github.com/WP-SUHV/suapi",
+    "authors": [
+      {
+        "name": "Philipp Meier",
+        "email": "philipp.meier@fbriders.ch",
+        "homepage": "https://github.com/meip",
+        "role": "Developer"
+      }
+    ],
+    "type": "project",
+    "require": {
+        "php": ">=5.4",
+        "guzzlehttp/guzzle": "~6.0",
+        "kevinrob/guzzle-cache-middleware": "*",
+        "doctrine/cache": "^1.0"
+    },
+	"require-dev": {
+		"phpunit/phpunit": "6.2.*"
+    },
+	"autoload": {
+        "psr-4": {
+            "SUHV\\Suapi\\": "src/"
+        }
+    }
+}
