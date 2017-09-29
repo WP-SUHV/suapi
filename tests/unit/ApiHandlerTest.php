@@ -80,7 +80,7 @@ class ApiHandlerTest extends TestCase
     {
         $leagueAndGroup = LeagueAndGroup::CreateFromLeagueName("Herren Aktive GF 1. Liga");
         $this->assertEquals(3, $leagueAndGroup->getLeagueId());
-        $this->assertEquals("GF", $leagueAndGroup->getLeagueType());
+        $this->assertEquals("GF", $leagueAndGroup->getHasSmallGameField());
     }
 
     /**
