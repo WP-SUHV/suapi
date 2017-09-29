@@ -87,6 +87,16 @@ class ApiHandlerTest extends TestCase
      * Test all games query from api handler
      * @return void
      */
+    public function testGetGamesForClub()
+    {
+        $allGames = self::$apiHandler->getGamesForClub(new Club(377, "FB Riders DBR"));
+        $this->assertInstanceOf('SUHV\Suapi\dto\Game', $allGames[0]);
+    }
+
+    /**
+     * Test all games query from api handler
+     * @return void
+     */
     public function testGetGamesForTeam()
     {
         $allGames = self::$apiHandler->getGamesForTeam(new Team(428988, "Herren 3. Liga Gruppe 10"));

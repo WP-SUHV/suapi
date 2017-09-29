@@ -23,10 +23,10 @@ define('WP_SUAPI_ENDPOINT_TEAMS', 'teams');
 define('WP_SUAPI_ENDPOINT_GAMES', 'games');
 define('WP_SUAPI_ENDPOINT_RANKINGS', 'rankings');
 define('WP_SUAPI_ENDPOINT_FIXTURE_LIST', 'games');
+define('PARAMETER_GAMES_PER_PAGE', '&games_per_page=1000');
 
 class ApiHandler
 {
-
   /*
    * Uri
    * @var string $uri
@@ -137,6 +137,44 @@ class ApiHandler
   }
 
   /**
+   * Get all games for club
+   * @return Array(SUHV\Suapi\dto\Games)
+   */
+  public function getGamesForClub(Club $club)
+  {
+    $response = $this->guzzle->get(
+      WP_SUAPI_ENDPOINT_GAMES
+      . "?season=" . $this->yearForQuery
+      . "&mode=club"
+      . "&view=full"
+      . "&order=natural"
+      . "&club_id=" . $club->getClubId()
+      . PARAMETER_GAMES_PER_PAGE);
+    if ($response->getStatusCode() !== 200) {
+      throw new SuApiException($response->getBody());
+    }
+
+    return array_map(function ($item) {
+      $id = $item->link->ids[0];
+      $date = $item->cells[0]->text[0];
+      $time = $item->cells[0]->text[1];
+      if (isset($item->cells[1]->text[0]) && isset($item->cells[1]->text[1])) {
+        $location = new Location($item->cells[1]->text[0], $item->cells[1]->text[1]);
+        $location->setLocationLongitude($item->cells[1]->link->x);
+        $location->setLocationLatitude($item->cells[1]->link->y);
+      } else {
+        $location = new Location();
+      }
+      $league = LeagueAndGroup::CreateFromLeagueName($item->cells[2]->text[0]);
+      $league->setLeagueGroup($item->cells[2]->text[1]);
+      $teamHome = $item->cells[3]->text[0];
+      $teamAway = $item->cells[4]->text[0];
+      $result = $item->cells[5]->text[0];
+      return new Game($id, $date, $time, $teamHome, $teamAway, $location, $result);
+    }, json_decode($response->getBody())->data->regions[0]->rows);
+  }
+
+  /**
    * Get all games for team
    * @return Array(SUHV\Suapi\dto\Games)
    */
@@ -148,7 +186,8 @@ class ApiHandler
       . "&mode=team"
       . "&view=full"
       . "&order=natural"
-      . "&team_id=" . $team->getTeamId());
+      . "&team_id=" . $team->getTeamId()
+      . PARAMETER_GAMES_PER_PAGE);
     if ($response->getStatusCode() !== 200) {
       throw new SuApiException($response->getBody());
     }
