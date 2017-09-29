@@ -4,8 +4,8 @@ class LeagueAndGroup
 {
     private $leagueName;
     private $leagueGroup;
-    private $hasSmallGameField;
-    private $isCup;
+    private $hasSmallGameField = false;
+    private $isCup = false;
     private $leagueId;
     private $leagueGameClassId;
 
@@ -43,12 +43,16 @@ class LeagueAndGroup
         //print_r($leagueName);
         if (preg_match("/(Schweizer\sCup\sHerren)/", $leagueName, $parsed)) { //Schweizer Cup Herren
             $league->setHasSmallGameField(false);
+            $league->setIsCup(true);
         } else if (preg_match("/(Schweizer\sCup\sDamen)/", $leagueName, $parsed)) { //Schweizer Cup Damen
             $league->setHasSmallGameField(false);
+            $league->setIsCup(true);
         } else if (preg_match("/(Ligacup\sHerren)/", $leagueName, $parsed)) { //Ligacup Herren
             $league->setHasSmallGameField(true);
+            $league->setIsCup(true);
         } else if (preg_match("/(Ligacup\sDamen)/", $leagueName, $parsed)) { //Ligacup Damen
             $league->setHasSmallGameField(true);
+            $league->setIsCup(true);
         } else if (preg_match("/([a-zA-Z]+)\s[a-zA-Z]+\s([a-zA-Z]+)\s(\d*)\.\sLiga/", $leagueName, $parsed)) { //Herren Aktive GF 1. Liga
             //print_r($parsed);
             $league->setHasSmallGameField($parsed[2]);
