@@ -1,11 +1,11 @@
 <?php namespace SUHV\Suapi;
 
+use Doctrine\Common\Cache\FilesystemCache;
 use GuzzleHttp\Client;
 use GuzzleHttp\HandlerStack;
 use Kevinrob\GuzzleCache\CacheMiddleware;
 use Kevinrob\GuzzleCache\Storage\DoctrineCacheStorage;
-use Kevinrob\GuzzleCache\Strategy\PrivateCacheStrategy;
-use Doctrine\Common\Cache\FilesystemCache;
+use Kevinrob\GuzzleCache\Strategy\GreedyCacheStrategy;
 use SUHV\Suapi\dto\Club;
 use SUHV\Suapi\dto\Fixture;
 use SUHV\Suapi\dto\FixtureList;
@@ -68,10 +68,10 @@ class ApiHandler
         $stack = HandlerStack::create();
         if ($useCache) {
             $stack->push(new CacheMiddleware(
-                new PrivateCacheStrategy(
+                new GreedyCacheStrategy(
                     new DoctrineCacheStorage(
                         new FilesystemCache('cache/')
-                    )
+                    ), 1800 // 30 Mins cache
                 )), 'cache');
         }
         $this->guzzle = new Client([
@@ -174,7 +174,9 @@ class ApiHandler
                 $location = new Location();
             }
             $league = LeagueAndGroup::CreateFromLeagueName($item->cells[2]->text[0]);
-            $league->setLeagueGroup($item->cells[2]->text[1]);
+            if (isset($item->cells[2]->text[1])) {
+                $league->setLeagueGroup($item->cells[2]->text[1]);
+            }
             $teamHome = $item->cells[3]->text[0];
             $teamAway = $item->cells[4]->text[0];
             $result = $item->cells[5]->text[0];
@@ -301,7 +303,8 @@ class ApiHandler
             . "&view=" . "full"
             . "&games_per_page=" . "100"
             . "&season=" . $this->yearForQuery
-            . "&team_id=" . $team->getTeamId());
+            . "&team_id=" . $team->getTeamId()
+            . PARAMETER_GAMES_PER_PAGE);
         if ($response->getStatusCode() !== 200) {
             throw new SuApiException($response->getBody());
         }
