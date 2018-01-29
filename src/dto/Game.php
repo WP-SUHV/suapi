@@ -34,6 +34,25 @@ class Game
         $this->gameLeague = $gameLeague;
     }
 
+    /**
+     * @return [HOME|AWAY|DRAWN]
+     */
+    public function getWinningString()
+    {
+        $resultSplitted = explode(':', $this->gameResult);
+        $goalsHome = $resultSplitted[0];
+        $goalsAway = $resultSplitted[1];
+        if ($goalsHome > $goalsAway) {
+            return "HOME";
+        } else if ($goalsAway > $goalsHome) {
+            return "AWAY";
+        } else if ($goalsHome == $goalsAway && is_numeric($goalsHome) && is_numeric($goalsAway)) {
+            // Validation for numberic is required if no result was reported
+            return "DRAWN";
+        } else {
+            return "";
+        }
+    }
 
     public function __toString()
     {
