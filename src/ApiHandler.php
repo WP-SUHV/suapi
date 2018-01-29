@@ -162,26 +162,7 @@ class ApiHandler
             throw new SuApiException($response->getBody());
         }
 
-        return array_map(function ($item) {
-            $id = $item->link->ids[0];
-            $date = $item->cells[0]->text[0];
-            $time = $item->cells[0]->text[1];
-            if (isset($item->cells[1]->text[0]) && isset($item->cells[1]->text[1])) {
-                $location = new Location($item->cells[1]->text[0], $item->cells[1]->text[1]);
-                $location->setLocationLongitude($item->cells[1]->link->x);
-                $location->setLocationLatitude($item->cells[1]->link->y);
-            } else {
-                $location = new Location();
-            }
-            $league = LeagueAndGroup::CreateFromLeagueName($item->cells[2]->text[0]);
-            if (isset($item->cells[2]->text[1])) {
-                $league->setLeagueGroup($item->cells[2]->text[1]);
-            }
-            $teamHome = $item->cells[3]->text[0];
-            $teamAway = $item->cells[4]->text[0];
-            $result = $item->cells[5]->text[0];
-            return new Game($id, $date, $time, $teamHome, $teamAway, $location, $result);
-        }, json_decode($response->getBody())->data->regions[0]->rows);
+        return $this->parseGames($response);
     }
 
     /**
@@ -201,7 +182,16 @@ class ApiHandler
         if ($response->getStatusCode() !== 200) {
             throw new SuApiException($response->getBody());
         }
+        return $this->parseGames($response);
+    }
 
+
+    /**
+     * @param $gameResponse
+     * @return array
+     */
+    private function parseGames($gameResponse)
+    {
         return array_map(function ($item) {
             $id = $item->link->ids[0];
             $date = $item->cells[0]->text[0];
@@ -213,13 +203,16 @@ class ApiHandler
             } else {
                 $location = new Location();
             }
-            $teamHome = $item->cells[2]->text[0];
-            $teamAway = $item->cells[3]->text[0];
-            $result = $item->cells[4]->text[0];
-            return new Game($id, $date, $time, $teamHome, $teamAway, $location, $result);
-        }, json_decode($response->getBody())->data->regions[0]->rows);
+            $league = LeagueAndGroup::CreateFromLeagueName($item->cells[2]->text[0]);
+            if (isset($item->cells[2]->text[1])) {
+                $league->setLeagueGroup($item->cells[2]->text[1]);
+            }
+            $teamHome = $item->cells[3]->text[0];
+            $teamAway = $item->cells[4]->text[0];
+            $result = $item->cells[5]->text[0];
+            return new Game($id, $date, $time, $teamHome, $teamAway, $location, $result, $league);
+        }, json_decode($gameResponse->getBody())->data->regions[0]->rows);
     }
-
     /**
      * Get ranking for team
      * @return RankingTable

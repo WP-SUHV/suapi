@@ -9,6 +9,7 @@ class Game
     private $gameTeamAway;
     private $gameLocation;
     private $gameResult;
+    private $gameLeague;
 
     /**
      * Game constructor.
@@ -19,8 +20,9 @@ class Game
      * @param $gameTeamAway
      * @param $gameLocation
      * @param $gameResult
+     * @param $gameLeague
      */
-    public function __construct($gameId, $gameDate, $gameTime, $gameTeamHome, $gameTeamAway, $gameLocation, $gameResult)
+    public function __construct($gameId, $gameDate, $gameTime, $gameTeamHome, $gameTeamAway, $gameLocation, $gameResult, $gameLeague)
     {
         $this->gameId = $gameId;
         $this->gameDate = $gameDate;
@@ -29,6 +31,7 @@ class Game
         $this->gameTeamAway = $gameTeamAway;
         $this->gameLocation = $gameLocation;
         $this->gameResult = $gameResult;
+        $this->gameLeague = $gameLeague;
     }
 
 
@@ -152,5 +155,21 @@ class Game
     public function setGameResult($gameResult)
     {
         $this->gameResult = $gameResult;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getGameLeague()
+    {
+        return $this->gameLeague;
+    }
+
+    /**
+     * @param mixed $gameLeague
+     */
+    public function setGameLeagaue($gameLeague)
+    {
+        $this->gameLeague = $gameLeague;
     }
 }
